@@ -1,0 +1,23 @@
+4.21
+change names
+use a new file OAARdataStructure.h, claiming OAARNode, OAARLink, OAARTopology, OAARFlow (add)
+why we should duplicate memory in probCreate?
+
+
+
+
+
+
+
+probCreate( scip, probName, Topology, Flow, nFlow )
+struct SCIP_ProbData
+{
+   SCIP_VAR**            vars;         /**< all exiting variables in the problem */
+   SCIP_CONS**           conss;        /**< all constraints */
+   OAARTopology*         Topology;     /**< Topology of the problem */
+   OAARFlow**            Flow;         /**< Flow array storing all user defined flow infomation */ 
+   int                   nFLow;        /**< Number of flows */
+   int                   nvars;        /**< number of generated variables */
+   int                   varssize;     /**< size of the variable array */
+};
+
