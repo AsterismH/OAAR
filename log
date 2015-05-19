@@ -1,0 +1,93 @@
+I decided to use knapsack constraint. So the capacity of each link and bandwidth of each flow should be integer.
+the testdata file is not updated
+why ids? I think that ids[i] always equals i
+function vardataprint, in file vardata_OAAR.c. I do not understand why there is ids?
+define USER_DEBUG
+directed graph
+add nFlowSol[nFlow] to the probdata, in addvar callback, maintain this value
+
+struct SCIP_ProbData
+{
+   SCIP_VAR**            vars;         /**< all exiting variables in the problem */
+   SCIP_CONS**           conss;        /**< all constraints */
+   OAARNode*             Nodes;        /**< Nodes array */
+   OAARLink*             Links;        /**< Links array */
+   OAARFlow*             Flows;        /**< Flow array storing all user defined flow infomation */ 
+   int                   nNodes;       /**< Number of Nodes */
+   int                   nOpticalNodes;/**< Number of Optical Nodes */
+   int                   nLinks;       /**< Number of Links */
+   int                   nOpticalLinks;/**< NUmber of Optical Links */
+   int                   nFLows;       /**< Number of flows */
+   int                   nvars;        /**< number of generated variables */
+   int                   nCons;        /**< number of constraints */
+   int                   varssize;     /**< size of the variable array */
+   int*                  nFlowSol;
+};
+SCIP_RETCODE probdataCreate(
+   SCIP*                 scip,               /**< SCIP data structure */
+   SCIP_PROBDATA**       probdata,           /**< pointer to problem data */
+   SCIP_VAR**            vars,               /**< all exist variables */
+   SCIP_CONS**           conss,              /**< set partitioning constraints for each job exactly one */
+   OAARNode*             Nodes,              /**< Nodes array */
+   OAARLink*             Links,              /**< Links array */
+   OAARFlow*             Flows,              /**< Flow information */
+   int                   nNodes,             /**< number of Nodes */
+   int                   nOpticalNodes,      /**< number of optical nodes */
+   int                   nLinks,             /**< number of links */
+   int                   nOpticalLinks,      /**< number of optical links */
+   int                   nFlows,             /**< number of flows */
+   int                   nvars,              /**< number of variables */
+   int                   nCons               /**< number of constraints */
+   )
+
+
+// pricer 
+The pricer data  
+struct SCIP_PricerData
+{
+   SCIP_CONSHDLR*        conshdlr;           /**< comstraint handler for "same" and "diff" constraints */
+   SCIP_CONS**           conss;              /**< set covering constraints for the items */
+   OAARNode*             Nodes;
+   OAARLink*             Links;
+   OAARFlow*             Flows;
+   int                   nNodes;
+   int                   nOpticalNodes;
+   int                   nLinks;
+   int                   nOpticalLinks;
+   int                   nFlows;
+   int                   nCons;
+};
+pricer vars:
+x(nLinks) y(nLinks*nWaveLength) z(nLinks*nWaveLength)
+Add variables
+x: c_uv = p_i * ( DelayPrice_i * (ProcDleay_u + QueueDelay_u + PropDelay_uv + TransDelay_uv) + 
+                  JitterPrice_i * Jitter_u + BandWidth_i * BandCost_uv )
+Constraints:
+Format: nCons                                Type      nVar
+Cons1:  1                                    setpart   degree of s_k
+Cons2:  nNodes-2                             linear    
+Cons3:  1                                    setpart
+Cons4:  nOpticalLinks                        linear
+Cons5:  (nOpticalNodes-1)*nWaveLength        linear
+Cons6:  nOpticalLinks*nWaveLength            linear
+Cons7:  nOpticalLinks*nWaveLength            linear
+
+//branching rule
+We need to maintain an array(oriFlowVars, binary) indicating the correspondence between lambda and x,y,z
+Thus, the corresponding interface should also be implemented
+
+
+questions:
+1. how to get the name of a variable? var->name? SCIPvarGetName()?
+
+SCIPinfinity(scip);
+
+Topology:
+
+* ----------------- *
+|                   |
+* ----------------- *
+|                   |
+* ----------------- *
+
+

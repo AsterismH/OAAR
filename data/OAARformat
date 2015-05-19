@@ -1,0 +1,20 @@
+# problem name
+probname
+# numbers
+nNodes nOpticalNodes nLinks nOpticalLinks nFlows
+######################
+# information of each node
+ProcDelay QueueDelay Jitter IsOptical
+nConnectedLinks (links ids) 
+# end
+#
+######################
+# information of each link TransDelay=PacketSize(1500Bytes)/Capacity
+Capacity PropDelay BandCost IsOptical
+endNodes 
+# end
+#
+######################
+# Flows
+######################
+si di pi BandWidthi DelayPricei JitterPricei
