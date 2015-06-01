@@ -1,0 +1,3 @@
+In reality, there exists nodes that are able to handle both optical links and electronic links.
+We treat such nodes as elecNodes.
+So an optical link may connect: 1.two elecNodes; 2.one elecNode one opticalNode; 3 two opticalNodes;

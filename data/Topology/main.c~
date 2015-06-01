@@ -1,0 +1,38 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+
+
+int main()
+{
+   char probName[16];
+   int nNodes, nOpticalNodes, nLinks, nOpticalLinks, nFlows;
+   OAARNode* Nodes;
+   OAARLink* Links;
+   OAARFlow* Flows;
+
+   /* create optical topology
+    * 1.create a tree for nOpticalNodes
+    * 2.randomly add remaining nOpticalLinks-nOpticalNodes+1 
+    **/
+   for( i = 0; i < nOpticalNodes; i++)
+   {
+      createOpticalNode(&Nodes[i]);
+      if(i == 0) continue;
+      attachOpticalNode(&Links[i-1], i); /* create an optical link with head=i and tail<i */
+   }
+   for(i = 0; i < nOpticalLinks-nOpticalNodes+1; i++)
+   {
+      /* create an random optical link
+       * the head and tail are not limited to opticalNodes */
+      connectOpticalNodes(&Links[i+nOpticalNodes-1], nNodes-1); 
+   }
+}
+
+void attachOpticalNode(OAARLink* Link, int head)
+{
+}
+
+void connectOpticalNodes(OAARLink* Link, int maxindex)
+{
+}
