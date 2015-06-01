@@ -1,3 +1,4 @@
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
@@ -34,35 +35,47 @@ void createElecNode(OAARNode* Node);
 void createOpticalLink(OAARLink* Link, int Head, int Tail, int i);
 void createElecLink(OAARLink* Link, int Head, int Tail, int i);
 void createFlow(OAARFlow* Flow);
+int intRandom(int low, int high);
 
 OAARNode* Nodes;
 OAARLink* Links;
 OAARFlow* Flows;
-char probName[16];
+char probName[16] = "data1";
 int nNodes, nOpticalNodes, nLinks, nOpticalLinks, nFlows;
 
 int main()
 {
    int nElecNodes, nElecNodes1, nElecNodes2, nElecLinks;
    int i,j,k;
+   int head, tail;
 
    /* read nNodes, nOpticalNodes, nLinks, nOpticalLinks, nFlows */
-   printf("Set prob name:\n");
-   scanf("%s", probName);
-   printf("\n");
-   printf("Set nNodes, nOpticalNodes, nLinks, nOpticalLinks, nFlows:\n");
-   scanf("%d %d %d %d %d", &nNodes, &nOpticalNodes, &nLinks, &nOpticalLinks, &nFlows);
-   printf("\n");
+   //printf("Set prob name:\n");
+   //scanf("%s", probName);
+   //printf("\n");
+   //printf("Set nNodes, nOpticalNodes, nLinks, nOpticalLinks, nFlows:\n");
+   //scanf("%d %d %d %d %d", &nNodes, &nOpticalNodes, &nLinks, &nOpticalLinks, &nFlows);
+   //printf("\n");
+
+   nNodes = 5;
+   nOpticalNodes = 2;
+   nLinks = 8;
+   nOpticalLinks = 3;
+   nFlows = 2;
+
 
    nElecNodes = nNodes - nOpticalNodes;
    nElecLinks = nLinks - nOpticalLinks;
    nElecNodes1 = intRandom((int)(0.2*nElecNodes), (int)(0.6*nElecNodes));
+   if(nElecNodes1 == 0) nElecNodes1 = 1;
    nElecNodes2 = nElecNodes - nElecNodes1;
 
    /* alloc memory for Nodes, Links, Flows */
    Nodes = (OAARNode*)malloc(nNodes*sizeof(OAARNode));
    Links = (OAARLink*)malloc(nLinks*sizeof(OAARLink));
    Flows = (OAARFlow*)malloc(nFlows*sizeof(OAARFlow));
+
+   srand((int)time(NULL));
 
    /* create network topology
     * 1.create a tree for nOpticalNodes 
@@ -89,20 +102,26 @@ int main()
    for(i = nOpticalNodes; i < nOpticalNodes+nElecNodes1; i++)
    {
       createElecNode(&Nodes[i]);
-      createOpticalLink(&Links[i-1], i, intRandom(0, nOpticalNodes-1), i-1);
+	  do{tail = intRandom(0, nOpticalNodes-1);} while(i == tail);
+      createOpticalLink(&Links[i-1], i, tail, i-1);
    }
    for(i = nOpticalNodes+nElecNodes1; i < nOpticalNodes+nElecNodes1+nElecNodes2; i++)
    {
       createElecNode(&Nodes[i]);
-      createElecLink(&Links[i-1], i, intRandom(nOpticalNodes, i-1), i-1);
+	  do{tail = intRandom(nOpticalNodes, i-1);} while(i == tail);
+      createElecLink(&Links[i-1], i, tail, i-1+nOpticalLinks+nElecNodes2-nOpticalNodes+1-nElecNodes);
    }
    for(i = nOpticalNodes-1+nElecNodes; i < nOpticalLinks+nElecNodes2; i++)
    {
-      createOpticalLink(&Links[i], intRandom(0, nNodes-1), intRandom(0, nNodes-1), i);
+       head = intRandom(0, nNodes-1);
+	   do{tail = intRandom(0, nNodes-1);} while(i == tail);
+	   createOpticalLink(&Links[i], head, tail, i-nElecNodes2);
    }
    for(i = nOpticalLinks+nElecNodes2; i < nOpticalLinks+nElecLinks; i++)
    {
-      createElecLink(&Links[i], intRandom(nOpticalNodes, nNodes-1), intRandom(nOpticalNodes, nNodes-1), i);
+       head = intRandom(nOpticalNodes, nNodes-1);
+	   do{tail = intRandom(nOpticalNodes, nNodes-1);} while(i == tail);
+	   createElecLink(&Links[i], head, tail, i);
    }
 
    /* generate random flow */
@@ -169,7 +188,7 @@ int main()
       */
 
   }
-  for(i = nOpticalLinks+nElecNodes2; i < nOpticalLinks+nElecNodes; i++)
+  for(i = nOpticalLinks+nElecNodes2; i < nOpticalLinks+nElecLinks; i++)
   {
       printf("# link %d\n", j); j++;
       printf("%d %lf %lf %d\n", Links[i].Capacity, Links[i].PropDelay, Links[i].BandCost,
@@ -244,6 +263,7 @@ void createFlow(OAARFlow* Flow)
 {
    Flow->Source = intRandom(0, nNodes-1);
    Flow->Destination = intRandom(0, nNodes-1);
+   while(Flow->Source == Flow->Destination) Flow->Destination = intRandom(0, nNodes-1);
    Flow->Priority = 1.0;
    Flow->BandWidth = 400;
    Flow->DelayPrice = 200;
@@ -252,6 +272,8 @@ void createFlow(OAARFlow* Flow)
 
 int intRandom(int low, int high)
 {
-   srand((int)time(0));
-   return low+(int)( (double)(high-low) * (double)rand()/(double)RAND_MAX );
+   
+   //return low+(int)( (double)(high-low) * (double)rand()/(double)RAND_MAX );
+   if(high == low) return low;
+   else return rand()%(high-low+1)+low;
 }
